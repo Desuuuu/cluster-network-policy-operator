@@ -1,0 +1,18 @@
+{{- if and .Values.metrics.enable .Values.metrics.service -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cluster-network-policy-operator.serviceName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cluster-network-policy-operator.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.metrics.service.type }}
+  ports:
+  - port: {{ .Values.metrics.service.port }}
+    protocol: TCP
+    name: http
+    targetPort: 8080
+  selector:
+    {{- include "cluster-network-policy-operator.selectorLabels" . | nindent 4 }}
+{{- end -}}

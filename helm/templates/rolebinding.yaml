@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "cluster-network-policy-operator.fullname" . }}-leader-election-rolebinding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cluster-network-policy-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "cluster-network-policy-operator.roleName" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "cluster-network-policy-operator.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}

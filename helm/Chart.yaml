@@ -1,0 +1,19 @@
+apiVersion: v2
+name: cluster-network-policy-operator
+description: Deploy Kubernetes NetworkPolicy resources across namespaces.
+type: application
+version: 0.0.0
+appVersion: ""
+kubeVersion: ">=1.15.0-0"
+keywords:
+- cluster
+- network
+- policy
+annotations:
+  artifacthub.io/category: networking
+home: https://github.com/Desuuuu/cluster-network-policy-operator
+sources:
+- https://github.com/Desuuuu/cluster-network-policy-operator
+maintainers:
+- name: Desuuuu
+  email: contact@desuuuu.com

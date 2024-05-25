@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '>=1.21.0'
+        cache: false
+    - name: Setup Helm
+      uses: azure/setup-helm@v4
+    - name: Run tests
+      env:
+        TAG: ${{ github.ref_name }}
+      run: make test helm-check
+    - name: Build and push image/chart
+      env:
+        REGISTRY: ghcr.io
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        TAG: ${{ github.ref_name }}
+        HELM_TEMPLATE: ./dist/release-files/cluster-network-policy-operator.yaml
+      run: |
+        mkdir -p ./dist/release-files
+        make ko-login ko-build helm-login helm-package helm-template
+        cp ./helm/crds/*.yaml ./dist/release-files
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ github.ref_name }}
+        files: ./dist/release-files/*
+        generate_release_notes: true
