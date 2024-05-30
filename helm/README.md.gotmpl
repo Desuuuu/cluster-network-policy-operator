@@ -24,7 +24,7 @@ The chart can be installed using the following command:
 helm install cluster-network-policy-operator oci://ghcr.io/desuuuu/helm-charts/cluster-network-policy-operator
 ```
 
-This will boostrap both the CRD and the operator.
+This will bootstrap both the CRD and the operator.
 
 ## Usage
 
