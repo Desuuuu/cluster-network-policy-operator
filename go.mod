@@ -1,6 +1,6 @@
 module github.com/Desuuuu/cluster-network-policy-operator
 
-go 1.21
+go 1.23
 
 require (
 	github.com/KimMachineGun/automemlimit v0.6.1
