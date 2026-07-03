@@ -5,7 +5,7 @@ HELM_RELEASE ?= cluster-network-policy-operator
 HELM_NAMESPACE ?= cluster-network-policy-operator
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
-ENVTEST_K8S_VERSION = 1.29.0
+ENVTEST_K8S_VERSION = 1.36.0
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -133,12 +133,12 @@ KUBECONFORM ?= $(LOCALBIN)/kubeconform-$(KUBECONFORM_VERSION)
 HELM_DOCS ?= $(LOCALBIN)/helm-docs-$(HELM_DOCS_VERSION)
 
 ## Tool Versions
-CONTROLLER_TOOLS_VERSION ?= v0.15.0
-ENVTEST_VERSION ?= release-0.18
-GOLANGCI_LINT_VERSION ?= v1.58.1
-KO_VERSION ?= v0.15.2
-KUBECONFORM_VERSION ?= v0.6.6
-HELM_DOCS_VERSION ?= v1.13.1
+CONTROLLER_TOOLS_VERSION ?= v0.21.0
+ENVTEST_VERSION ?= release-0.24
+GOLANGCI_LINT_VERSION ?= v2.12.2
+KO_VERSION ?= v0.18.1
+KUBECONFORM_VERSION ?= v0.8.0
+HELM_DOCS_VERSION ?= v1.14.2
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally.
@@ -153,7 +153,7 @@ $(ENVTEST): $(LOCALBIN)
 .PHONY: golangci-lint
 golangci-lint: $(GOLANGCI_LINT) ## Download golangci-lint locally.
 $(GOLANGCI_LINT): $(LOCALBIN)
-	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION))
+	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/v2/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION))
 
 .PHONY: ko
 ko: $(KO) ## Download ko locally.

@@ -54,7 +54,7 @@ func (f *Filters) Set(value string) error {
 }
 
 func (f *Filters) String() string {
-	var patterns []string
+	patterns := make([]string, 0, len(f.Exact)+len(f.Prefix)+len(f.Suffix))
 
 	patterns = append(patterns, f.Exact...)
 
