@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+//nolint:goconst
 var _ = Describe("EvaluateFilters", func() {
 	Context("excluded only", func() {
 		excluded := Filters{

@@ -27,10 +27,11 @@ package v1
 import (
 	k8snetworkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
 const (
-	ConflictAnnotation = "networking.desuuuu.com/conflict-policy"
+	ConflictAnnotation = GroupName + "/conflict-policy"
 	ConflictReplace    = "replace"
 )
 
@@ -74,5 +75,8 @@ type ClusterNetworkPolicyList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&ClusterNetworkPolicy{}, &ClusterNetworkPolicyList{})
+	SchemeBuilder.Register(func(s *runtime.Scheme) error {
+		s.AddKnownTypes(SchemeGroupVersion, &ClusterNetworkPolicy{}, &ClusterNetworkPolicyList{})
+		return nil
+	})
 }

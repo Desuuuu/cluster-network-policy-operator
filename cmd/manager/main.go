@@ -142,7 +142,7 @@ func main() {
 	if err = (&controller.ClusterNetworkPolicyReconciler{
 		Client:             mgr.GetClient(),
 		Scheme:             mgr.GetScheme(),
-		Recorder:           mgr.GetEventRecorderFor("clusternetworkpolicy-controller"),
+		Recorder:           mgr.GetEventRecorder("clusternetworkpolicy-controller"),
 		ExcludedNamespaces: excludedNamespaces,
 		IncludedNamespaces: includedNamespaces,
 	}).SetupWithManager(mgr); err != nil {

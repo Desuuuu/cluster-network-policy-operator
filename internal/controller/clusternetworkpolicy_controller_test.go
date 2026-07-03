@@ -281,6 +281,7 @@ var _ = Describe("ClusterNetworkPolicy Controller", func() {
 			conflictNamespace string
 		)
 
+		//nolint:goconst
 		BeforeEach(func(ctx context.Context) {
 			testNamespace, ignoredNamespace, conflictNamespace = random("test"), random("ignored"), random("conflict")
 

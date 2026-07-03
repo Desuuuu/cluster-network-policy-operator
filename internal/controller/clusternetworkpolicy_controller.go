@@ -39,7 +39,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -56,7 +56,7 @@ import (
 type ClusterNetworkPolicyReconciler struct {
 	client.Client
 	Scheme             *runtime.Scheme
-	Recorder           record.EventRecorder
+	Recorder           events.EventRecorder
 	ExcludedNamespaces Filters
 	IncludedNamespaces Filters
 }
@@ -94,7 +94,7 @@ func (r *ClusterNetworkPolicyReconciler) Reconcile(ctx context.Context, req ctrl
 
 	selector, err := metav1.LabelSelectorAsSelector(&clusterNetworkPolicy.Spec.NamespaceSelector)
 	if err != nil {
-		r.Recorder.Event(&clusterNetworkPolicy, corev1.EventTypeWarning, "InvalidConfiguration", "Invalid namespace selector")
+		r.Recorder.Eventf(&clusterNetworkPolicy, nil, corev1.EventTypeWarning, "InvalidConfiguration", "GetNamespaceSelector", "Invalid namespace selector")
 
 		log.Error(err, "Invalid namespace selector")
 
@@ -130,7 +130,7 @@ func (r *ClusterNetworkPolicyReconciler) Reconcile(ctx context.Context, req ctrl
 				continue
 			}
 
-			r.Recorder.Event(&clusterNetworkPolicy, corev1.EventTypeNormal, "NetworkPolicyDeleted", fmt.Sprintf("NetworkPolicy deleted from namespace %s", networkPolicy.Namespace))
+			r.Recorder.Eventf(&clusterNetworkPolicy, nil, corev1.EventTypeNormal, "NetworkPolicyDeleted", "DeleteNetworkPolicy", "NetworkPolicy deleted from namespace %s", networkPolicy.Namespace)
 
 			log.Info("NetworkPolicy deleted", "namespace", networkPolicy.Namespace)
 			continue
@@ -138,7 +138,7 @@ func (r *ClusterNetworkPolicyReconciler) Reconcile(ctx context.Context, req ctrl
 
 		res, err := controllerutil.CreateOrPatch(ctx, r.Client, &networkPolicy, func() error {
 			if !replaceOnConflict && networkPolicy.UID != types.UID("") && !metav1.IsControlledBy(&networkPolicy, &clusterNetworkPolicy) {
-				r.Recorder.Event(&clusterNetworkPolicy, corev1.EventTypeWarning, "NetworkPolicyConflict", fmt.Sprintf("NetworkPolicy conflict in namespace %s", networkPolicy.Namespace))
+				r.Recorder.Eventf(&clusterNetworkPolicy, nil, corev1.EventTypeWarning, "NetworkPolicyConflict", "PatchNetworkPolicy", "NetworkPolicy conflict in namespace %s", networkPolicy.Namespace)
 
 				return errors.New("conflicting NetworkPolicy detected")
 			}
@@ -160,11 +160,11 @@ func (r *ClusterNetworkPolicyReconciler) Reconcile(ctx context.Context, req ctrl
 
 		switch res {
 		case controllerutil.OperationResultCreated:
-			r.Recorder.Event(&clusterNetworkPolicy, corev1.EventTypeNormal, "NetworkPolicyCreated", fmt.Sprintf("NetworkPolicy created in namespace %s", networkPolicy.Namespace))
+			r.Recorder.Eventf(&clusterNetworkPolicy, nil, corev1.EventTypeNormal, "NetworkPolicyCreated", "CreateNetworkPolicy", "NetworkPolicy created in namespace %s", networkPolicy.Namespace)
 
 			log.Info("NetworkPolicy created", "namespace", networkPolicy.Namespace)
 		case controllerutil.OperationResultUpdated:
-			r.Recorder.Event(&clusterNetworkPolicy, corev1.EventTypeNormal, "NetworkPolicyUpdated", fmt.Sprintf("NetworkPolicy updated in namespace %s", networkPolicy.Namespace))
+			r.Recorder.Eventf(&clusterNetworkPolicy, nil, corev1.EventTypeNormal, "NetworkPolicyUpdated", "UpdateNetworkPolicy", "NetworkPolicy updated in namespace %s", networkPolicy.Namespace)
 
 			log.Info("NetworkPolicy updated", "namespace", networkPolicy.Namespace)
 		}
